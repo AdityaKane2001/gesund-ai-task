@@ -5,8 +5,8 @@ import dataclasses
 from typing import List, Optional
 
 
-TEMP_DIR = os.path.join(os.getcwd(), "/streamlit_temp")
-os.mkdir(TEMP_DIR)
+TEMP_DIR = os.path.join(os.getcwd(), "/tmp")
+# os.mkdir(TEMP_DIR)
 
 
 @dataclasses.dataclass
