@@ -4,7 +4,10 @@ import dataclasses
 
 from typing import List, Optional
 
-TEMP_DIR = "~/temp_streamlit"
+
+TEMP_DIR = os.path.join(os.getcwd(), "/tmp")
+os.mkdir(TEMP_DIR)
+
 
 @dataclasses.dataclass
 class Artifacts:
