@@ -4,7 +4,7 @@ import dataclasses
 
 from typing import List, Optional
 
-TEMP_DIR = "E:\\temp_streamlit"
+TEMP_DIR = "~/temp_streamlit"
 
 @dataclasses.dataclass
 class Artifacts:
