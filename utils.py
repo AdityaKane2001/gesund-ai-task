@@ -1,13 +1,9 @@
-import streamlit as st
 import os
 import dataclasses
 
 from typing import List, Optional
 
-
 TEMP_DIR = os.path.join(os.getcwd(), "/tmp")
-# os.mkdir(TEMP_DIR)
-
 
 @dataclasses.dataclass
 class Artifacts:
