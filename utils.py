@@ -4,6 +4,8 @@ import dataclasses
 
 from typing import List, Optional
 
+TEMP_DIR = "E:\\temp_streamlit"
+
 @dataclasses.dataclass
 class Artifacts:
     final_model: str
@@ -20,7 +22,7 @@ class Artifacts:
 
 def write_to_file(uploadedfile):
     # Code credits: https://blog.jcharistech.com/2021/01/21/how-to-save-uploaded-files-to-directory-in-streamlit-apps/
-    path_to_file = os.path.join("C:\\Users\\adity\\temp_streamlit", uploadedfile.name)
+    path_to_file = os.path.join(TEMP_DIR, uploadedfile.name)
     with open(path_to_file, "wb") as f:
         f.write(uploadedfile.getbuffer())
     return path_to_file

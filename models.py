@@ -18,8 +18,8 @@ models = [_get_model(model_class) for model_class in model_classes]
 
 ResNet50 = models[0]
 ResNet50V2 = models[1]
-EfficientNetB1 = models[2]
-EfficientNetB2 = models[3]
+EfficientNetB1 = models[3]
+EfficientNetB2 = models[2]
 InceptionV3 = models[4]
 
 

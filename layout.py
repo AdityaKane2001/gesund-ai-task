@@ -1,9 +1,12 @@
 import streamlit as st
 import runner
 import utils
+import pandas as pd
+import matplotlib.pyplot as plt
 
 class DisplayManager:
     def __init__(self):
+        st.set_page_config(page_title="predikt", layout="wide")
         self.model_manip = runner.ModelHandler()
 
         self.init_elements()
@@ -17,6 +20,7 @@ class DisplayManager:
 
         # Output elements
         self.output_container = st.container()
+        self.images_container = st.container()
 
     def display_menus(self):
         self.uploaded_weights = None
@@ -63,6 +67,7 @@ class DisplayManager:
             self.run_button = st.button("Run!")
             self.reset_button = st.button("Reset experiment")
             self.plots, self.metrics = st.columns(2)
+    
         
         if self.uploaded_weights is not None:
             self.model_path = utils.write_to_file(self.uploaded_weights)
@@ -70,42 +75,57 @@ class DisplayManager:
     def declare_functionallity(self):
         if self.run_button:
             metrics, predictions = self.model_manip.run(self.get_artifacts())
-            self.display_predictions(predictions)
-            self.display_metrics(metrics)
+            classwise_metrics = self.model_manip.get_classwise_stats()
+
+            self.display_predictions(classwise_metrics)
+            self.display_metrics(predictions, metrics)
+            # self.display_expandable_images(image_label_pairs)
         
         if self.reset_button:
             self.clear_outputs()
 
-    def display_predictions(self, predictions):
+
+    def display_predictions(self, classwise_stats):
+        fig = plt.figure(figsize=(10, 5))
+        plt.bar(classwise_stats["Classes"], classwise_stats["Occurences"], color='maroon',width=0.4)
         with self.plots:
-            st.write(predictions)
+            st.pyplot(fig)
+
     
-    def display_metrics(self, metrics):
+    def display_metrics(self, predictions, metrics):
         with self.metrics:
-            st.write(metrics)
+            if metrics!="NA":    
+                st.write("Average accuracy: **" + str(metrics[1]*100) + "%**")
+                st.write("Average loss: **" + str(metrics[0]) + "**")
+            df = pd.DataFrame(predictions, columns=[
+                              "Image Names", "Raw labels", "Confidence", "Label"])
+            # predictions.insert(0, )
+            st.table(data=df)
     
     def clear_outputs(self):
         self.output_container.empty() # Works because container may be a subclass of st.empty
 
     def get_artifacts(self):
+        all_assets = [self.final_model, self.mode, self.model_path, self.uploaded_args_to_names,
+                      self.uploaded_images, self.uploaded_labels]
+
         
-        artifacts = utils.Artifacts(self.final_model, self.mode, self.model_path, self.uploaded_args_to_names, 
-                     self.uploaded_images, self.uploaded_labels)
+        artifacts = utils.Artifacts(*all_assets)
                     
         if self.mode == "Evaluate":
-            # if None in artifacts:
-            #     self.output_container.empty()
-            #     self.output_container.write(
-            #         "All required artifacts must be provided.")
-            #     raise ValueError("All required artifacts must be provided.")
+            if None in all_assets:
+                self.output_container.empty()
+                self.output_container.write(
+                    "All required artifacts must be provided.")
+                raise ValueError("All required artifacts must be provided.")
             
             return artifacts
         else:
-            # if None in artifacts[:-1]:
-            #     self.output_container.empty()
-            #     self.output_container.write(
-            #         "All required artifacts must be provided.")
-            #     raise ValueError("All required artifacts must be provided.")
+            if None in all_assets[:-1]:
+                self.output_container.empty()
+                self.output_container.write(
+                    "All required artifacts must be provided.")
+                raise ValueError("All required artifacts must be provided.")
             return artifacts
 
     
