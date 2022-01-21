@@ -8,7 +8,7 @@ class DisplayManager:
     def __init__(self):
         st.set_page_config(page_title="predikt", layout="wide")
         self.model_manip = runner.ModelHandler()
-
+        st.write("*Dev version*")
         self.init_elements()
         self.display_menus()
         self.declare_functionallity()
