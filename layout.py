@@ -75,11 +75,16 @@ class DisplayManager:
     def declare_functionallity(self):
         if self.run_button:
             metrics, predictions = self.model_manip.run(self.get_artifacts())
-            classwise_metrics = self.model_manip.get_classwise_stats()
-
-            self.display_predictions(classwise_metrics)
-            self.display_metrics(predictions, metrics)
-            # self.display_expandable_images(image_label_pairs)
+            
+            if predictions is None:
+                st.error(metrics) # Error object
+            else:
+                classwise_metrics = self.model_manip.get_classwise_stats()
+                self.display_predictions(classwise_metrics)
+                self.display_metrics(predictions, metrics)
+                # self.display_expandable_images(image_label_pairs)
+            
+            
         
         if self.reset_button:
             self.clear_outputs()

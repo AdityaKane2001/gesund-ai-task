@@ -3,7 +3,7 @@ import dataclasses
 
 from typing import List, Optional
 
-TEMP_DIR = os.path.join(os.getcwd(), "/tmp")
+TEMP_DIR = os.path.join(os.getcwd(), "tmp")
 
 @dataclasses.dataclass
 class Artifacts:

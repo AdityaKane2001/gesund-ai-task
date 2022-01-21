@@ -16,12 +16,16 @@ class DataHandler:
         pass
     
     def check_labels_and_images(self, imagenames, label_mappings):
-        sorted_images = imagenames.sort()
-        sorted_labels = label_mappings.keys().sort()
-        assert sorted_images == sorted_labels, "Check labels and images again"
+        sorted_images = list(imagenames)
+        sorted_labels = list(label_mappings.keys())
+        
+        sorted_images.sort()
+        sorted_labels.sort()
+        if sorted_images != sorted_labels:
+            raise ValueError("Check labels and images again. Either some labels are missing or are unnecessary.")
 
     def check_labels_and_mappings(self, labels_mapping, label_to_int_mappings):
-        for label,_ in labels_mapping:
+        for _, label in labels_mapping:
             assert label in label_to_int_mappings.keys(), "Check labels and label mappings again"
 
     def parse_label_mapping(self, args_to_names):
@@ -85,9 +89,7 @@ class DataHandler:
         label_mappings = self.parse_labels(labels, label_to_int_mapping)
         labels = [label_mappings[imagename]
                 for imagename in imagenames]
-
         self.check_labels_and_images(imagenames, label_mappings)
-
         all_images = np.array(images)
         # all_images = all_images[:]
         all_images_ds = tf.data.Dataset.from_tensor_slices(all_images)
@@ -135,9 +137,16 @@ class ModelHandler:
         model.compile("adam", "categorical_crossentropy", metrics=["accuracy"])
         
         if artifacts.mode == "Evaluate":
-            ds = self.data_handler.get_eval_ds(artifacts.uploaded_images,
+            try:
+                ds = self.data_handler.get_eval_ds(artifacts.uploaded_images,
                                             artifacts.uploaded_labels,
                                             artifacts.uploaded_args_to_names)
+            except ValueError as e:
+                return e, None
+            
+            except AssertionError as e:
+                return e, None
+            
             ds = ds.batch(len(artifacts.uploaded_images))
 
             model.load_weights(artifacts.model_path)
