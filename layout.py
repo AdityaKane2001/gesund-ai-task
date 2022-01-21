@@ -3,6 +3,7 @@ import runner
 import utils
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
 class DisplayManager:
     def __init__(self):
@@ -80,7 +81,7 @@ class DisplayManager:
             self.display_predictions(classwise_metrics)
             self.display_metrics(predictions, metrics)
             # self.display_expandable_images(image_label_pairs)
-        
+            os.remove(self.model_path)
         if self.reset_button:
             self.clear_outputs()
 
