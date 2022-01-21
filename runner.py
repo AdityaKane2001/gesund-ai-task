@@ -15,6 +15,15 @@ class DataHandler:
     def __init__(self):
         pass
     
+    def check_labels_and_images(self, imagenames, label_mappings):
+        sorted_images = imagenames.sort()
+        sorted_labels = label_mappings.keys().sort()
+        assert sorted_images == sorted_labels, "Check labels and images again"
+
+    def check_labels_and_mappings(self, labels_mapping, label_to_int_mappings):
+        for label,_ in labels_mapping:
+            assert label in label_to_int_mappings.keys(), "Check labels and label mappings again"
+
     def parse_label_mapping(self, args_to_names):
         mappings = args_to_names.getvalue().decode("utf-8").split("\n")
         mappings = [pair.strip("\n") for pair in mappings]
@@ -35,6 +44,9 @@ class DataHandler:
     def parse_labels(self, labels_file, mapping):
         all_labels = labels_file.getvalue().decode("utf-8").split("\n")
         all_labels = [label.strip("\r").split(" : ") for label in all_labels]
+
+        self.check_labels_and_mappings(all_labels, mapping)
+
         all_labels = {key: int(mapping[value]) for key, value in all_labels}
         return all_labels
 
@@ -74,6 +86,8 @@ class DataHandler:
         labels = [label_mappings[imagename]
                 for imagename in imagenames]
 
+        self.check_labels_and_images(imagenames, label_mappings)
+
         all_images = np.array(images)
         # all_images = all_images[:]
         all_images_ds = tf.data.Dataset.from_tensor_slices(all_images)
@@ -94,6 +108,7 @@ class DataHandler:
         return self.imagenames
 
 class ModelHandler:
+    """Handles all model related operations."""
     def __init__(self):
         self.data_handler = DataHandler()
 
